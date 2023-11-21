@@ -1,44 +1,45 @@
 // npm modules
-import { useState } from 'react'
-import { Routes, Route, useNavigate } from 'react-router-dom'
+import { useState } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
 
 // pages
-import Signup from './pages/Signup/Signup'
-import Login from './pages/Login/Login'
-import Landing from './pages/Landing/Landing'
-import Companies from './pages/Companies/Companies'
-import ChangePassword from './pages/ChangePassword/ChangePassword'
+import Signup from "./pages/Signup/Signup";
+import Login from "./pages/Login/Login";
+import Landing from "./pages/Landing/Landing";
+import Companies from "./pages/Companies/Companies";
+import Products from "./pages/Products/Products";
+import ChangePassword from "./pages/ChangePassword/ChangePassword";
 
 // components
-import NavBar from './components/NavBar/NavBar'
-import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
+import NavBar from "./components/NavBar/NavBar";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 // services
-import * as authService from './services/authService'
+import * as authService from "./services/authService";
 
 // styles
-import './App.css'
+import "./App.css";
 
 type UserType = {
-  email: string
-  username: string
-  name: string
-  id: string
-} | null
+  email: string;
+  username: string;
+  name: string;
+  id: string;
+} | null;
 
 function App() {
   const [user, setUser] = useState<UserType>(authService.getUser());
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    authService.logout()
-    setUser(null)
-    navigate('/')
-  }
+    authService.logout();
+    setUser(null);
+    navigate("/");
+  };
 
   const handleAuthEvt = () => {
-    setUser(authService.getUser())
-  }
+    setUser(authService.getUser());
+  };
 
   return (
     <>
@@ -50,6 +51,14 @@ function App() {
           element={
             <ProtectedRoute user={user}>
               <Companies />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/products"
+          element={
+            <ProtectedRoute user={user}>
+              <Products />
             </ProtectedRoute>
           }
         />
@@ -71,7 +80,7 @@ function App() {
         />
       </Routes>
     </>
-  )
+  );
 }
-export type { UserType }
-export default App
+export type { UserType };
+export default App;

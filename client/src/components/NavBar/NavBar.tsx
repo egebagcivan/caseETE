@@ -1,9 +1,16 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { UserType } from '../../App';
-import { Menu } from 'antd';
-import { UserOutlined, TeamOutlined, LoginOutlined, LogoutOutlined, SettingOutlined } from '@ant-design/icons';
-import './NavBar.css'; // Özel CSS stil dosyanız
+import React from "react";
+import { NavLink } from "react-router-dom";
+import { UserType } from "../../App";
+import { Menu } from "antd";
+import {
+  UserOutlined,
+  TeamOutlined,
+  LoginOutlined,
+  LogoutOutlined,
+  SettingOutlined,
+  UnorderedListOutlined,
+} from "@ant-design/icons";
+import "./NavBar.css";
 
 interface NavBarProps {
   user: UserType | null;
@@ -22,10 +29,17 @@ const NavBar = ({ user, handleLogout }: NavBarProps) => {
             <Menu.Item key="companies" icon={<TeamOutlined />}>
               <NavLink to="/companies">Companies</NavLink>
             </Menu.Item>
+            <Menu.Item key="products" icon={<UnorderedListOutlined />}>
+              <NavLink to="/products">Products</NavLink>
+            </Menu.Item>
             <Menu.Item key="change-password" icon={<SettingOutlined />}>
               <NavLink to="/auth/change-password">Change Password</NavLink>
             </Menu.Item>
-            <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
+            <Menu.Item
+              key="logout"
+              icon={<LogoutOutlined />}
+              onClick={handleLogout}
+            >
               LOG OUT
             </Menu.Item>
           </>

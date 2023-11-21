@@ -1,5 +1,5 @@
-import mongoose, { Document, Schema, CallbackError } from 'mongoose';
-import bcrypt from 'bcrypt';
+import mongoose, { Document, Schema, CallbackError } from "mongoose";
+import bcrypt from "bcrypt";
 
 const saltRounds = 6;
 
@@ -12,24 +12,27 @@ interface IUser extends Document {
   comparePassword: (tryPassword: string) => Promise<boolean>;
 }
 
-const userSchema = new Schema<IUser>({
-  name: String,
-  email: { type: String, required: true, lowercase: true },
-  password: String,
-  profile: { type: Schema.Types.ObjectId, ref: 'Profile' },
-}, {
-  timestamps: true,
-});
+const userSchema = new Schema<IUser>(
+  {
+    name: String,
+    email: { type: String, required: true, lowercase: true },
+    password: String,
+    profile: { type: Schema.Types.ObjectId, ref: "Profile" },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-userSchema.set('toJSON', {
+userSchema.set("toJSON", {
   transform: function (doc, ret) {
     delete ret.password;
     return ret;
   },
 });
 
-userSchema.pre<IUser>('save', async function (next) {
-  if (!this.isModified('password')) return next();
+userSchema.pre<IUser>("save", async function (next) {
+  if (!this.isModified("password")) return next();
 
   try {
     const hash = await bcrypt.hash(this.password, saltRounds);
@@ -40,10 +43,12 @@ userSchema.pre<IUser>('save', async function (next) {
   }
 });
 
-userSchema.methods.comparePassword = async function (tryPassword: string): Promise<boolean> {
+userSchema.methods.comparePassword = async function (
+  tryPassword: string
+): Promise<boolean> {
   return bcrypt.compare(tryPassword, this.password);
 };
 
-const User = mongoose.model<IUser>('User', userSchema);
+const User = mongoose.model<IUser>("User", userSchema);
 
 export { User, IUser };

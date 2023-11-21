@@ -1,12 +1,11 @@
-// npm modules
-import { ChangeEvent, FormEvent, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { ChangeEvent, FormEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 // services
-import * as authService from '../../services/authService'
+import * as authService from "../../services/authService";
 
 // css
-import styles from './ChangePassword.module.css'
+import styles from "./ChangePassword.module.css";
 
 interface ChangePasswordProps {
   handleAuthEvt: () => void;
@@ -20,34 +19,34 @@ interface FormData {
 
 const ChangePassword = ({ handleAuthEvt }: ChangePasswordProps) => {
   const navigate = useNavigate();
-  const [message, setMessage] = useState<string>('');
+  const [message, setMessage] = useState<string>("");
   const [formData, setFormData] = useState<FormData>({
-    password: '',
-    newPassword: '',
-    newPasswordConf: '',
+    password: "",
+    newPassword: "",
+    newPasswordConf: "",
   });
 
   const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
-    setMessage('');
+    setMessage("");
     setFormData({ ...formData, [evt.target.name]: evt.target.value });
   };
 
   const handleSubmit = async (evt: FormEvent<HTMLFormElement>) => {
-    evt.preventDefault()
+    evt.preventDefault();
     try {
-      await authService.changePassword(formData)
-      handleAuthEvt()
-      navigate('/')
+      await authService.changePassword(formData);
+      handleAuthEvt();
+      navigate("/");
     } catch (err) {
       setMessage((err as Error).message);
     }
-  }
+  };
 
-  const { password, newPassword, newPasswordConf } = formData
+  const { password, newPassword, newPasswordConf } = formData;
 
   const isFormInvalid = () => {
-    return !(password && newPassword && newPassword === newPasswordConf)
-  }
+    return !(password && newPassword && newPassword === newPasswordConf);
+  };
 
   return (
     <main className={styles.container}>
@@ -89,7 +88,7 @@ const ChangePassword = ({ handleAuthEvt }: ChangePasswordProps) => {
         </div>
       </form>
     </main>
-  )
-}
+  );
+};
 
-export default ChangePassword
+export default ChangePassword;

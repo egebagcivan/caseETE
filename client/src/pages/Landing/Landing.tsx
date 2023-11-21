@@ -1,17 +1,17 @@
 // css
-import styles from './Landing.module.css'
-import { UserType } from '../../App'
+import styles from "./Landing.module.css";
+import { UserType } from "../../App";
 
 interface LandingProps {
-  user: UserType | null; // Assuming user can be null or UserType
+  user: UserType | null;
 }
 
 const Landing = ({ user }: LandingProps) => {
   return (
     <main className={styles.container}>
-      <h1>hello, {user ? user.name : 'friend'}</h1>
+      <h1>hello, {user ? user.name : "friend"}</h1>
     </main>
   );
 };
 
-export default Landing
+export default Landing;

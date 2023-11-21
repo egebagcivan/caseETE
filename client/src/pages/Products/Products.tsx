@@ -1,28 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input, Popconfirm, message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import * as companyService from "../../services/companyService";
+import * as productService from "../../services/productService";
 
-interface Company {
+interface Product {
   _id: string;
   name: string;
-  legalNumber: string;
-  country: string;
-  website?: string;
+  category: string;
+  amount: number;
+  unit: string;
+  company: string;
 }
 
-const Companies = () => {
-  const [companies, setCompanies] = useState<Company[]>([]);
+const Products = () => {
+  const [products, setProducts] = useState<Product[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
 
   useEffect(() => {
-    fetchCompanies();
+    fetchProducts();
   }, []);
 
-  const fetchCompanies = async () => {
-    const companyData = await companyService.getAllCompanies();
-    setCompanies(companyData);
+  const fetchProducts = async () => {
+    const productData = await productService.getAllProducts();
+    setProducts(productData);
   };
 
   const showCreateModal = () => {
@@ -34,66 +35,63 @@ const Companies = () => {
     form.resetFields();
   };
 
-  const handleCreate = async (values: Company) => {
+  const handleCreate = async (values: Product) => {
     try {
-      await companyService.createCompany(values);
+      await productService.createProduct(values);
       setIsModalVisible(false);
       form.resetFields();
-      fetchCompanies();
-      message.success("Company added successfully");
+      fetchProducts();
+      message.success("Product added successfully");
     } catch (error) {
       console.error(error);
-      message.error("Failed to add company");
+      message.error("Failed to add product");
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
-      await companyService.deleteCompany(id);
-      fetchCompanies();
-      message.success("Company deleted successfully");
+      await productService.deleteProduct(id);
+      fetchProducts();
+      message.success("Product deleted successfully");
     } catch (error) {
       console.error(error);
-      message.error("Failed to delete company");
+      message.error("Failed to delete product");
     }
   };
 
   const columns = [
     {
-      title: "Company Name",
+      title: "Product Name",
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "Legal Number",
-      dataIndex: "legalNumber",
-      key: "legalNumber",
+      title: "Product Category",
+      dataIndex: "productCategory",
+      key: "productCategory",
     },
     {
-      title: "Country",
-      dataIndex: "country",
-      key: "country",
+      title: "Product Amount",
+      dataIndex: "amount",
+      key: "amount",
     },
     {
-      title: "Website",
-      dataIndex: "website",
-      key: "website",
-      render: (text: string) =>
-        text ? (
-          <a href={text} target="_blank" rel="noopener noreferrer">
-            {text}
-          </a>
-        ) : (
-          ""
-        ),
+      title: "Unit",
+      dataIndex: "unit",
+      key: "unit",
+    },
+    {
+      title: "Prouct Company",
+      dataIndex: "company",
+      key: "company",
     },
     {
       title: "Actions",
       key: "actions",
-      render: (_: void, record: Company) => (
+      render: (_: void, record: Product) => (
         <>
           <Popconfirm
-            title="Are you sure delete this company?"
+            title="Are you sure delete this product?"
             onConfirm={() => handleDelete(record._id)}
           >
             <Button icon={<DeleteOutlined />} />
@@ -106,10 +104,10 @@ const Companies = () => {
   return (
     <main>
       <Button type="primary" onClick={showCreateModal}>
-        Add Company
+        Add Product
       </Button>
       <Modal
-        title="Create New Company"
+        title="Create New Product"
         visible={isModalVisible}
         onCancel={handleCancel}
         onOk={() => form.submit()}
@@ -117,7 +115,7 @@ const Companies = () => {
         <Form form={form} onFinish={handleCreate} layout="vertical">
           <Form.Item
             name="name"
-            label="Company Name"
+            label="Product Name"
             rules={[{ required: true }]}
           >
             <Input />
@@ -141,9 +139,9 @@ const Companies = () => {
           </Form.Item>
         </Form>
       </Modal>
-      <Table dataSource={companies} columns={columns} rowKey="_id" />
+      <Table dataSource={products} columns={columns} rowKey="_id" />
     </main>
   );
 };
 
-export default Companies;
+export default Products;

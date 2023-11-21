@@ -1,7 +1,7 @@
-import { Navigate } from 'react-router-dom';
-import React from 'react';
+import { Navigate } from "react-router-dom";
+import React from "react";
 
-import { UserType } from '../../App';
+import { UserType } from "../../App";
 
 interface ProtectedRouteProps {
   user: UserType | null;

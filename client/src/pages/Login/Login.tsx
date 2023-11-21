@@ -1,9 +1,9 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Card, message as antMessage } from 'antd';
-import { LoginOutlined } from '@ant-design/icons';
-import * as authService from '../../services/authService';
-import './Login.css'; // Custom CSS file for additional styling
+import React, { useState, ChangeEvent, FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Form, Input, Button, Card, message as antMessage } from "antd";
+import { LoginOutlined } from "@ant-design/icons";
+import * as authService from "../../services/authService";
+import "./Login.css";
 
 interface LoginPageProps {
   handleAuthEvt: () => void;
@@ -16,7 +16,10 @@ interface FormData {
 
 const LoginPage = ({ handleAuthEvt }: LoginPageProps) => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<FormData>({ email: '', password: '' });
+  const [formData, setFormData] = useState<FormData>({
+    email: "",
+    password: "",
+  });
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
@@ -28,7 +31,7 @@ const LoginPage = ({ handleAuthEvt }: LoginPageProps) => {
       setIsSubmitted(true);
       await authService.login(formData);
       handleAuthEvt();
-      navigate('/');
+      navigate("/");
     } catch (err) {
       antMessage.error((err as Error).message);
       setIsSubmitted(false);
@@ -39,10 +42,22 @@ const LoginPage = ({ handleAuthEvt }: LoginPageProps) => {
     <div className="login-container">
       <Card title="Log In" bordered={false} style={{ width: 400 }}>
         <Form onFinish={handleSubmit} layout="vertical">
-          <Form.Item label="Email" name="email" rules={[{ required: true, type: 'email' }]}>
-            <Input prefix={<LoginOutlined />} name="email" onChange={handleChange} />
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[{ required: true, type: "email" }]}
+          >
+            <Input
+              prefix={<LoginOutlined />}
+              name="email"
+              onChange={handleChange}
+            />
           </Form.Item>
-          <Form.Item label="Password" name="password" rules={[{ required: true }]}>
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[{ required: true }]}
+          >
             <Input.Password name="password" onChange={handleChange} />
           </Form.Item>
           <Form.Item>

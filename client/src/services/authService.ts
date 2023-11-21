@@ -1,7 +1,7 @@
 // services
-import * as tokenService from './tokenService'
+import * as tokenService from "./tokenService";
 const BASE_URL = `${import.meta.env.VITE_BACK_END_SERVER_URL}/api/auth`;
-import { UserType } from '../App';
+import { UserType } from "../App";
 
 interface SignupFormData {
   name: string;
@@ -24,19 +24,19 @@ interface ChangePasswordFormData {
 async function signup(signupFormData: SignupFormData): Promise<void> {
   try {
     const res = await fetch(`${BASE_URL}/signup`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(signupFormData),
-    })
-    const json = await res.json()
+    });
+    const json = await res.json();
 
-    if (json.err) throw new Error(json.err)
+    if (json.err) throw new Error(json.err);
 
     if (json.token) {
-      tokenService.setToken(json.token)
+      tokenService.setToken(json.token);
     }
   } catch (err) {
-    throw new Error(err as string)
+    throw new Error(err as string);
   }
 }
 
@@ -51,41 +51,43 @@ function logout(): void {
 async function login(loginFormData: LoginFormData): Promise<void> {
   try {
     const res = await fetch(`${BASE_URL}/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(loginFormData),
-    })
-    const json = await res.json()
+    });
+    const json = await res.json();
 
-    if (json.err) throw new Error(json.err)
+    if (json.err) throw new Error(json.err);
 
-    if (json.token) tokenService.setToken(json.token)
+    if (json.token) tokenService.setToken(json.token);
   } catch (err) {
-    throw new Error(err as string)
+    throw new Error(err as string);
   }
 }
 
-async function changePassword(changePasswordFormData: ChangePasswordFormData): Promise<void> {
+async function changePassword(
+  changePasswordFormData: ChangePasswordFormData
+): Promise<void> {
   try {
     const res = await fetch(`${BASE_URL}/change-password`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${tokenService.getToken()}`,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${tokenService.getToken()}`,
       },
       body: JSON.stringify(changePasswordFormData),
-    })
-    const json = await res.json()
+    });
+    const json = await res.json();
 
-    if (json.err) throw new Error(json.err)
+    if (json.err) throw new Error(json.err);
 
     if (json.token) {
-      tokenService.removeToken()
-      tokenService.setToken(json.token)
+      tokenService.removeToken();
+      tokenService.setToken(json.token);
     }
   } catch (err) {
-    throw new Error(err as string)
+    throw new Error(err as string);
   }
 }
 
-export { signup, getUser, logout, login, changePassword }
+export { signup, getUser, logout, login, changePassword };
