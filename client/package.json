@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/pro-components": "^2.6.42",
+    "antd": "^5.11.2",
     "i": "^0.3.7",
     "jwt-decode": "^3.1.2",
     "npm": "^10.2.4",

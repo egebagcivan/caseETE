@@ -1,12 +1,9 @@
-// npm modules
-import { useState, ChangeEvent, FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom'
-
-// services
-import * as authService from '../../services/authService'
-
-// css
-import styles from './Login.module.css'
+import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Form, Input, Button, Card, message as antMessage } from 'antd';
+import { LoginOutlined } from '@ant-design/icons';
+import * as authService from '../../services/authService';
+import './Login.css'; // Custom CSS file for additional styling
 
 interface LoginPageProps {
   handleAuthEvt: () => void;
@@ -19,70 +16,45 @@ interface FormData {
 
 const LoginPage = ({ handleAuthEvt }: LoginPageProps) => {
   const navigate = useNavigate();
-  const [message, setMessage] = useState<string>('');
-  const [formData, setFormData] = useState<FormData>({
-    email: '',
-    password: '',
-  });
+  const [formData, setFormData] = useState<FormData>({ email: '', password: '' });
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
-    setMessage('')
-    setFormData({ ...formData, [evt.target.name]: evt.target.value })
-  }
+    setFormData({ ...formData, [evt.target.name]: evt.target.value });
+  };
 
-  const handleSubmit = async (evt: FormEvent<HTMLFormElement>) => {
-    evt.preventDefault()
+  const handleSubmit = async () => {
     try {
-      if (!import.meta.env.VITE_BACK_END_SERVER_URL) {
-        throw new Error('No VITE_BACK_END_SERVER_URL in front-end .env')
-      }
-      await authService.login(formData)
-      handleAuthEvt()
-      navigate('/')
+      setIsSubmitted(true);
+      await authService.login(formData);
+      handleAuthEvt();
+      navigate('/');
     } catch (err) {
-      console.log(err)
-      setMessage((err as Error).message);
+      antMessage.error((err as Error).message);
+      setIsSubmitted(false);
     }
-  }
-
-  const { email, password } = formData
-
-  const isFormInvalid = () => {
-    return !(email && password)
-  }
+  };
 
   return (
-    <main className={styles.container}>
-      <h1>Log In</h1>
-      <p className={styles.message}>{message}</p>
-      <form autoComplete="off" onSubmit={handleSubmit} className={styles.form}>
-        <label className={styles.label}>
-          Email
-          <input
-            type="text"
-            value={email}
-            name="email"
-            onChange={handleChange}
-          />
-        </label>
-        <label className={styles.label}>
-          Password
-          <input
-            type="password"
-            value={password}
-            name="password"
-            onChange={handleChange}
-          />
-        </label>
-        <div>
+    <div className="login-container">
+      <Card title="Log In" bordered={false} style={{ width: 400 }}>
+        <Form onFinish={handleSubmit} layout="vertical">
+          <Form.Item label="Email" name="email" rules={[{ required: true, type: 'email' }]}>
+            <Input prefix={<LoginOutlined />} name="email" onChange={handleChange} />
+          </Form.Item>
+          <Form.Item label="Password" name="password" rules={[{ required: true }]}>
+            <Input.Password name="password" onChange={handleChange} />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={isSubmitted}>
+              Log In
+            </Button>
+          </Form.Item>
           <Link to="/">Cancel</Link>
-          <button className={styles.button} disabled={isFormInvalid()}>
-            Log In
-          </button>
-        </div>
-      </form>
-    </main>
-  )
-}
+        </Form>
+      </Card>
+    </div>
+  );
+};
 
-export default LoginPage
+export default LoginPage;

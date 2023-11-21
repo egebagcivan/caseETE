@@ -1,0 +1,13 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+  width: 100vw;
+}
+
+.ant-card {
+  text-align: center;
+  width: 500px;
+  margin: auto;
+}

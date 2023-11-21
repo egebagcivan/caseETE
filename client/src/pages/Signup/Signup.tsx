@@ -1,12 +1,8 @@
-// npm modules
-import { useState, useRef, ChangeEvent, FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-
-// services
-import * as authService from '../../services/authService'
-
-// css
-import styles from './Signup.module.css'
+import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Form, Input, Button, message as antMessage, Card } from 'antd';
+import * as authService from '../../services/authService';
+import './Signup.css'; // Bu dosya içinde ek stillemeleriniz olacak
 
 interface FormData {
   name: string;
@@ -15,95 +11,63 @@ interface FormData {
   passwordConf: string;
 }
 
-
 const Signup = ({ handleAuthEvt }: { handleAuthEvt: () => void }) => {
-  const navigate = useNavigate()
-
-  const [message, setMessage] = useState('')
-  const [formData, setFormData] = useState({
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     password: '',
     passwordConf: '',
-  })
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  });
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
-    setMessage('')
-    setFormData({ ...formData, [evt.target.name]: evt.target.value })
-  }
+    setFormData({ ...formData, [evt.target.name]: evt.target.value });
+  };
 
-  const handleSubmit = async (evt: FormEvent<HTMLFormElement>) => {
-    evt.preventDefault()
-    try {
-      if (!import.meta.env.VITE_BACK_END_SERVER_URL) {
-        throw new Error('No VITE_BACK_END_SERVER_URL in front-end .env')
-      }
-      setIsSubmitted(true)
-      await authService.signup(formData)
-      handleAuthEvt()
-      navigate('/')
-    } catch (err) {
-      console.log(err)
-      setMessage((err as Error).message);
-      setIsSubmitted(false)
+  const handleSubmit = async () => {
+    if (!(formData.password && formData.password === formData.passwordConf)) {
+      antMessage.error('Passwords do not match!');
+      return;
     }
-  }
 
-  const { name, email, password, passwordConf } = formData
-
-  const isFormInvalid = () => {
-    return !(name && email && password && password === passwordConf)
-  }
+    try {
+      setIsSubmitted(true);
+      await authService.signup(formData);
+      handleAuthEvt();
+      navigate('/');
+    } catch (err) {
+      antMessage.error((err as Error).message);
+      setIsSubmitted(false);
+    }
+  };
 
   return (
-    <main className={styles.container}>
-      <h1>Sign Up</h1>
-      <p className={styles.message}>{message}</p>
-      <form autoComplete="off" onSubmit={handleSubmit} className={styles.form}>
-        <label className={styles.label}>
-          Name
-          <input type="text" value={name} name="name" onChange={handleChange} />
-        </label>
-        <label className={styles.label}>
-          Email
-          <input
-            type="text"
-            value={email}
-            name="email"
-            onChange={handleChange}
-          />
-        </label>
-        <label className={styles.label}>
-          Password
-          <input
-            type="password"
-            value={password}
-            name="password"
-            onChange={handleChange}
-          />
-        </label>
-        <label className={styles.label}>
-          Confirm Password
-          <input
-            type="password"
-            value={passwordConf}
-            name="passwordConf"
-            onChange={handleChange}
-          />
-        </label>
-        <div>
+    <div className="signup-container">
+      <Card title="Sign Up" bordered={false}>
+        <Form onFinish={handleSubmit} layout="vertical">
+          <Form.Item label="Name" name="name" rules={[{ required: true }]}>
+            <Input name="name" onChange={handleChange} />
+          </Form.Item>
+          <Form.Item label="Email" name="email" rules={[{ required: true, type: 'email' }]}>
+            <Input name="email" onChange={handleChange} />
+          </Form.Item>
+          <Form.Item label="Password" name="password" rules={[{ required: true }]}>
+            <Input.Password name="password" onChange={handleChange} />
+          </Form.Item>
+          <Form.Item label="Confirm Password" name="passwordConf" rules={[{ required: true }]}>
+            <Input.Password name="passwordConf" onChange={handleChange} />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" disabled={isSubmitted} loading={isSubmitted}>
+              {!isSubmitted ? 'Sign Up' : 'Sending...'}
+            </Button>
+          </Form.Item>
           <Link to="/">Cancel</Link>
-          <button
-            className={styles.button}
-            disabled={ isFormInvalid() || isSubmitted }
-          >
-            {!isSubmitted ? 'Sign Up' : '🚀 Sending...'}
-          </button>
-        </div>
-      </form>
-    </main>
-  )
-}
+        </Form>
+      </Card>
+    </div>
+  );
+};
 
-export default Signup
+export default Signup;
