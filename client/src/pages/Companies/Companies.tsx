@@ -13,6 +13,7 @@ interface Company {
 
 const Companies = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [editingCompany, setEditingCompany] = useState<Company | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
 
@@ -26,6 +27,12 @@ const Companies = () => {
   };
 
   const showCreateModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const showEditModal = (company: Company) => {
+    setEditingCompany(company);
+    form.setFieldsValue(company); // Formu seçilen şirketin verileriyle doldur
     setIsModalVisible(true);
   };
 
@@ -44,6 +51,20 @@ const Companies = () => {
     } catch (error) {
       console.error(error);
       message.error("Failed to add company");
+    }
+  };
+
+  const handleUpdate = async (values: Company) => {
+    try {
+      await companyService.updateCompany({ ...editingCompany, ...values });
+      setIsModalVisible(false);
+      setEditingCompany(null);
+      form.resetFields();
+      fetchCompanies();
+      message.success("Company updated successfully");
+    } catch (error) {
+      console.error(error);
+      message.error("Failed to update company");
     }
   };
 
@@ -98,6 +119,7 @@ const Companies = () => {
           >
             <Button icon={<DeleteOutlined />} />
           </Popconfirm>
+          <Button icon={<EditOutlined />} onClick={() => showEditModal(record)} />
         </>
       ),
     },
@@ -109,12 +131,12 @@ const Companies = () => {
         Add Company
       </Button>
       <Modal
-        title="Create New Company"
+        title={editingCompany ? "Edit Company" : "Create New Company"}
         visible={isModalVisible}
         onCancel={handleCancel}
         onOk={() => form.submit()}
       >
-        <Form form={form} onFinish={handleCreate} layout="vertical">
+        <Form form={form} onFinish={editingCompany ? handleUpdate : handleCreate} layout="vertical">
           <Form.Item
             name="name"
             label="Company Name"

@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Input, Popconfirm, message } from "antd";
+import {
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Popconfirm,
+  message,
+  Select,
+} from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import * as productService from "../../services/productService";
+import * as companyService from "../../services/companyService";
 
 interface Product {
   _id: string;
@@ -12,39 +22,83 @@ interface Product {
   company: string;
 }
 
+interface Company {
+  _id: string;
+  name: string;
+  legalNumber: string;
+  country: string;
+  website?: string;
+}
+
 const Products = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
 
   useEffect(() => {
+    const fetchCompanies = async () => {
+      const companyData = await companyService.getAllCompanies();
+      setCompanies(companyData);
+    };
+
+    fetchCompanies();
     fetchProducts();
   }, []);
 
   const fetchProducts = async () => {
     const productData = await productService.getAllProducts();
-    setProducts(productData);
+    const productWithCompanyNames = productData.map(product => {
+      const company = companies.find(c => c._id === product.company);
+      return { ...product, companyName: product.company?.name };
+    });
+    setProducts(productWithCompanyNames);
+    console.log(productWithCompanyNames);
+  };
+
+  const handleEditClick = (product: Product) => () => {
+    showCreateOrEditModal(product);
   };
 
   const showCreateModal = () => {
+    setEditingProduct(null);
+    form.resetFields();
+    setIsModalVisible(true);
+  };
+
+  const showCreateOrEditModal = (product?: Product) => {
+    if (product) {
+      setEditingProduct(product);
+      form.setFieldsValue(product);
+    } else {
+      form.resetFields();
+    }
     setIsModalVisible(true);
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
+    setEditingProduct(null);
     form.resetFields();
   };
 
-  const handleCreate = async (values: Product) => {
+  const handleCreateOrUpdate = async (values: Product) => {
     try {
-      await productService.createProduct(values);
+      if (editingProduct) {
+        await productService.updateProduct({ ...editingProduct, ...values });
+        message.success("Product updated successfully");
+      } else {
+        await productService.createProduct(values);
+        message.success("Product added successfully");
+      }
       setIsModalVisible(false);
+      setEditingProduct(null);
       form.resetFields();
       fetchProducts();
-      message.success("Product added successfully");
     } catch (error) {
       console.error(error);
-      message.error("Failed to add product");
+      message.error("Failed to process product");
     }
   };
 
@@ -67,8 +121,8 @@ const Products = () => {
     },
     {
       title: "Product Category",
-      dataIndex: "productCategory",
-      key: "productCategory",
+      dataIndex: "category",
+      key: "category",
     },
     {
       title: "Product Amount",
@@ -82,8 +136,8 @@ const Products = () => {
     },
     {
       title: "Prouct Company",
-      dataIndex: "company",
-      key: "company",
+      dataIndex: "companyName",
+      key: "companyName",
     },
     {
       title: "Actions",
@@ -96,6 +150,7 @@ const Products = () => {
           >
             <Button icon={<DeleteOutlined />} />
           </Popconfirm>
+          <Button icon={<EditOutlined />} onClick={handleEditClick(record)} />
         </>
       ),
     },
@@ -107,12 +162,12 @@ const Products = () => {
         Add Product
       </Button>
       <Modal
-        title="Create New Product"
+        title={editingProduct ? "Edit Product" : "Create New Product"}
         visible={isModalVisible}
         onCancel={handleCancel}
         onOk={() => form.submit()}
       >
-        <Form form={form} onFinish={handleCreate} layout="vertical">
+        <Form form={form} onFinish={handleCreateOrUpdate} layout="vertical">
           <Form.Item
             name="name"
             label="Product Name"
@@ -121,21 +176,38 @@ const Products = () => {
             <Input />
           </Form.Item>
           <Form.Item
-            name="legalNumber"
-            label="Legal Number"
+            name="category"
+            label="Product Category"
             rules={[{ required: true }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            name="country"
-            label="Country"
+            name="amount"
+            label="Product Amount"
             rules={[{ required: true }]}
           >
             <Input />
           </Form.Item>
-          <Form.Item name="website" label="Website">
+          <Form.Item
+            name="unit"
+            label="Product Unit"
+            rules={[{ required: true }]}
+          >
             <Input />
+          </Form.Item>
+          <Form.Item
+            name="company"
+            label="Product Company"
+            rules={[{ required: true }]}
+          >
+            <Select>
+              {companies.map((company) => (
+                <Select.Option key={company._id} value={company._id}>
+                  {company.name}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
         </Form>
       </Modal>
