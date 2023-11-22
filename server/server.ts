@@ -12,6 +12,7 @@ import './config/database';
 import { router as authRouter } from './routes/auth';
 import companyRoutes from './routes/company';
 import productRoutes from './routes/product';
+import userRoutes from './routes/user';
 
 // create the express app
 const app: Application = express();
@@ -26,6 +27,7 @@ app.use(formData.parse());
 app.use('/api/auth', authRouter);
 app.use('/api/companies', companyRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/users', userRoutes);
 
 // handle 404 errors
 app.use((req: Request, res: Response, next: NextFunction) => {

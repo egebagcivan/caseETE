@@ -7,7 +7,6 @@ interface IUser extends Document {
   name: string;
   email: string;
   password: string;
-  profile: mongoose.Types.ObjectId;
 
   comparePassword: (tryPassword: string) => Promise<boolean>;
 }
@@ -17,7 +16,6 @@ const userSchema = new Schema<IUser>(
     name: String,
     email: { type: String, required: true, lowercase: true },
     password: String,
-    profile: { type: Schema.Types.ObjectId, ref: "Profile" },
   },
   {
     timestamps: true,

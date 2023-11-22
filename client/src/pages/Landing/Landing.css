@@ -2,8 +2,10 @@
   display: flex;
   align-items: center;
   flex-direction: column;
+  margin-top: 50px;
 }
 
-.container > p {
-  margin: 8px;
+.ant-card {
+  margin-bottom: 20px;
+  margin-top: 20px;
 }

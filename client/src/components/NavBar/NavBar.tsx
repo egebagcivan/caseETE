@@ -8,7 +8,8 @@ import {
   LoginOutlined,
   LogoutOutlined,
   SettingOutlined,
-  UnorderedListOutlined,
+  ShoppingCartOutlined,
+  HomeOutlined,
 } from "@ant-design/icons";
 import "./NavBar.css";
 
@@ -26,10 +27,13 @@ const NavBar = ({ user, handleLogout }: NavBarProps) => {
             <Menu.Item key="welcome" icon={<UserOutlined />}>
               Welcome, {user.name}
             </Menu.Item>
+            <Menu.Item key="dashboard" icon={<HomeOutlined />}>
+              <NavLink to="/">Dashboard</NavLink>
+            </Menu.Item>
             <Menu.Item key="companies" icon={<TeamOutlined />}>
               <NavLink to="/companies">Companies</NavLink>
             </Menu.Item>
-            <Menu.Item key="products" icon={<UnorderedListOutlined />}>
+            <Menu.Item key="products" icon={<ShoppingCartOutlined />}>
               <NavLink to="/products">Products</NavLink>
             </Menu.Item>
             <Menu.Item key="change-password" icon={<SettingOutlined />}>

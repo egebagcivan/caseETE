@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input, Popconfirm, message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import * as companyService from "../../services/companyService";
+import "./Companies.css";
 
 interface Company {
   _id: string;
@@ -9,6 +10,7 @@ interface Company {
   legalNumber: string;
   country: string;
   website?: string;
+  createdAt: string;
 }
 
 const Companies = () => {
@@ -126,8 +128,8 @@ const Companies = () => {
   ];
 
   return (
-    <main>
-      <Button type="primary" onClick={showCreateModal}>
+    <main className="mainContainer">
+      <Button className="addButton" type="primary" onClick={showCreateModal}>
         Add Company
       </Button>
       <Modal
@@ -163,7 +165,9 @@ const Companies = () => {
           </Form.Item>
         </Form>
       </Modal>
+      <div className="tableContainer">
       <Table dataSource={companies} columns={columns} rowKey="_id" />
+      </div>
     </main>
   );
 };

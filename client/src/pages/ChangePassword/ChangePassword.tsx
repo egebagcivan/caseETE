@@ -1,93 +1,75 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-// services
+import { Form, Input, Button, Card, message as antMessage } from "antd";
+import { LockOutlined } from "@ant-design/icons";
 import * as authService from "../../services/authService";
-
-// css
-import styles from "./ChangePassword.module.css";
+import "./ChangePassword.css";
 
 interface ChangePasswordProps {
   handleAuthEvt: () => void;
 }
 
-interface FormData {
-  password: string;
-  newPassword: string;
-  newPasswordConf: string;
-}
-
 const ChangePassword = ({ handleAuthEvt }: ChangePasswordProps) => {
   const navigate = useNavigate();
-  const [message, setMessage] = useState<string>("");
-  const [formData, setFormData] = useState<FormData>({
-    password: "",
-    newPassword: "",
-    newPasswordConf: "",
-  });
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
-    setMessage("");
-    setFormData({ ...formData, [evt.target.name]: evt.target.value });
-  };
-
-  const handleSubmit = async (evt: FormEvent<HTMLFormElement>) => {
-    evt.preventDefault();
+  const handleSubmit = async (values: { password: string; newPassword: string; newPasswordConf: string }) => {
+    if (values.newPassword !== values.newPasswordConf) {
+      antMessage.error("New passwords do not match!");
+      return;
+    }
+  
     try {
-      await authService.changePassword(formData);
+      setIsSubmitted(true);
+      // Only send password and newPassword to the backend
+      await authService.changePassword({
+        password: values.password,
+        newPassword: values.newPassword,
+      });
       handleAuthEvt();
       navigate("/");
+      antMessage.success("Password changed successfully");
     } catch (err) {
-      setMessage((err as Error).message);
+      antMessage.error((err as Error).message);
+      setIsSubmitted(false);
     }
   };
-
-  const { password, newPassword, newPasswordConf } = formData;
-
-  const isFormInvalid = () => {
-    return !(password && newPassword && newPassword === newPasswordConf);
-  };
+  
 
   return (
-    <main className={styles.container}>
-      <h1>Change Password</h1>
-      <p className={styles.message}>{message}</p>
-      <form autoComplete="off" onSubmit={handleSubmit} className={styles.form}>
-        <label className={styles.label}>
-          Current Password
-          <input
-            type="password"
-            value={password}
+    <div className="change-password-container">
+      <Card title="Change Password" bordered={false} style={{ width: 400 }}>
+        <Form onFinish={handleSubmit} layout="vertical">
+          <Form.Item
+            label="Current Password"
             name="password"
-            onChange={handleChange}
-          />
-        </label>
-        <label className={styles.label}>
-          New Password
-          <input
-            type="password"
-            value={newPassword}
+            rules={[{ required: true, message: "Please input your current password!" }]}
+          >
+            <Input.Password prefix={<LockOutlined />} />
+          </Form.Item>
+          <Form.Item
+            label="New Password"
             name="newPassword"
-            onChange={handleChange}
-          />
-        </label>
-        <label className={styles.label}>
-          Confirm New Password
-          <input
-            type="password"
-            value={newPasswordConf}
+            rules={[{ required: true, message: "Please input your new password!" }]}
+          >
+            <Input.Password />
+          </Form.Item>
+          <Form.Item
+            label="Confirm New Password"
             name="newPasswordConf"
-            onChange={handleChange}
-          />
-        </label>
-        <div>
-          <Link to="/">Cancel</Link>
-          <button className={styles.button} disabled={isFormInvalid()}>
-            Change Password
-          </button>
-        </div>
-      </form>
-    </main>
+            rules={[{ required: true, message: "Please confirm your new password!" }]}
+          >
+            <Input.Password />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={isSubmitted}>
+              Change Password
+            </Button>
+            <Link to="/" style={{ marginLeft: 10 }}>Cancel</Link>
+          </Form.Item>
+        </Form>
+      </Card>
+    </div>
   );
 };
 

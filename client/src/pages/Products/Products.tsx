@@ -51,7 +51,7 @@ const Products = () => {
     const productData = await productService.getAllProducts();
     const productWithCompanyNames = productData.map(product => {
       const company = companies.find(c => c._id === product.company);
-      return { ...product, companyName: product.company?.name };
+      return { ...product, companyName: company ? company.name : 'Unknown' };
     });
     setProducts(productWithCompanyNames);
     console.log(productWithCompanyNames);
@@ -136,8 +136,9 @@ const Products = () => {
     },
     {
       title: "Prouct Company",
-      dataIndex: "companyName",
+      dataIndex: ["company", "name"], 
       key: "companyName",
+      render: (_: void, record: Product) => record.company?.name || 'Unknown'
     },
     {
       title: "Actions",
@@ -157,8 +158,8 @@ const Products = () => {
   ];
 
   return (
-    <main>
-      <Button type="primary" onClick={showCreateModal}>
+    <main className="mainContainer">
+      <Button type="primary" className="addButton" onClick={showCreateModal}>
         Add Product
       </Button>
       <Modal
@@ -211,7 +212,9 @@ const Products = () => {
           </Form.Item>
         </Form>
       </Modal>
+      <div className="tableContainer">
       <Table dataSource={products} columns={columns} rowKey="_id" />
+      </div>
     </main>
   );
 };

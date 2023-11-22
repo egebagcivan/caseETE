@@ -8,6 +8,7 @@ interface Company {
   legalNumber: string;
   country: string;
   website?: string;
+  createdAt: string;
 }
 
 async function getAllCompanies(): Promise<Company[]> {

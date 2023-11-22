@@ -45,7 +45,14 @@ function App() {
     <>
       <NavBar user={user} handleLogout={handleLogout} />
       <Routes>
-        <Route path="/" element={<Landing user={user} />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute user={user}>
+              <Landing user={user} />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/companies"
           element={

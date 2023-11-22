@@ -18,7 +18,6 @@ interface LoginFormData {
 interface ChangePasswordFormData {
   password: string;
   newPassword: string;
-  newPasswordConf: string;
 }
 
 async function signup(signupFormData: SignupFormData): Promise<void> {
